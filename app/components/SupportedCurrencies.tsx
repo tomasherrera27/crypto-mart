@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 import { Coins, Bitcoin, DollarSign } from 'lucide-react'
 
 const currencies = [
-  { name: 'Ethereum', icon: Coins, color: 'text-blue-400' },
-  { name: 'Bitcoin', icon: Bitcoin, color: 'text-yellow-500' },
-  { name: 'Stablecoins', icon: DollarSign, color: 'text-green-500' },
+  { name: 'Ethereum', icon: Coins, color: 'text-blue-400', bgColor: 'bg-blue-400/20' },
+  { name: 'Bitcoin', icon: Bitcoin, color: 'text-yellow-500', bgColor: 'bg-yellow-500/20' },
+  { name: 'Stablecoins', icon: DollarSign, color: 'text-green-500', bgColor: 'bg-green-500/20' },
 ]
 
 export function SupportedCurrencies() {
@@ -20,7 +20,7 @@ export function SupportedCurrencies() {
         <h3 className="text-3xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
           Supported Cryptocurrencies
         </h3>
-        <div className="flex justify-center space-x-12">
+        <div className="flex flex-wrap justify-center gap-8">
           {currencies.map((currency, index) => (
             <motion.div 
               key={currency.name}
@@ -30,11 +30,11 @@ export function SupportedCurrencies() {
               transition={{ delay: index * 0.2, duration: 0.5 }}
             >
               <motion.div 
-                className={`p-4 rounded-full bg-gray-800/50 ${currency.color}`}
+                className={`p-4 rounded-full ${currency.bgColor}`}
                 whileHover={{ scale: 1.1, rotate: 360 }}
                 transition={{ type: "spring", stiffness: 300, damping: 10 }}
               >
-                <currency.icon className="h-12 w-12" />
+                <currency.icon className={`h-12 w-12 ${currency.color}`} />
               </motion.div>
               <motion.span 
                 className="mt-4 font-medium text-gray-300"
