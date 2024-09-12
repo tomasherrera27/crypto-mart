@@ -47,9 +47,9 @@ type ConnectionProps = {
   end: [number, number, number];
   color: string;
 }
-
 const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
-  // @ts-ignore
+    // @ts-expect-error - Ignoring type mismatch for deployment
+
   const ref = useRef<THREE.Line>(null)
 
   useFrame(() => {
@@ -60,7 +60,7 @@ const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
   })
 
   return (
-    // @ts-ignore
+    // @ts-expect-error - Ignoring type mismatch for deployment
     <Line
       ref={ref}
       points={[start, end]}
