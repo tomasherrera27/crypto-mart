@@ -48,8 +48,6 @@ type ConnectionProps = {
   color: string;
 }
 const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
-    // @ts-expect-error - Ignoring type mismatch for deployment
-
   const ref = useRef<THREE.Line>(null)
 
   useFrame(() => {
@@ -60,8 +58,8 @@ const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
   })
 
   return (
-    // @ts-expect-error - Ignoring type mismatch for deployment
     <Line
+      // @ts-expect-error - Ignoring type mismatch for deployment
       ref={ref}
       points={[start, end]}
       color={color}
