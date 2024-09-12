@@ -1,127 +1,60 @@
-'use client'
+import { NextResponse } from 'next/server';
+import { Order } from '@/app/types/Order';
 
-import React, { useRef, useMemo } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Sphere, Line, Text, PerspectiveCamera } from '@react-three/drei'
-import * as THREE from 'three'
+export async function GET() {
+  const apiKey = process.env.OPENSEA_API_KEY;
+  
+  console.log('API Key:', apiKey ? 'Present (length: ' + apiKey.length + ')' : 'Missing');
 
-const Node = ({ position, color }: { position: [number, number, number]; color: string }) => {
-  const ref = useRef()
+  if (!apiKey) {
+    console.error('API key not configured');
+    return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+  }
 
-  useFrame((_, delta) => {
-    ref.current.rotation.x += delta * 0.2
-    ref.current.rotation.y += delta * 0.3
-  })
+  try {
+    console.log('Fetching NFTs from OpenSea...');
+    const url = 'https://api.opensea.io/v2/orders/ethereum/seaport/listings?limit=20';
+    console.log('URL:', url);
 
-  return (
-    <group position={position}>
-      <Sphere ref={ref} args={[0.3, 32, 32]}>
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
-      </Sphere>
-      <Text
-        position={[0, 0.4, 0]}
-        fontSize={0.2}
-        color={color}
-        anchorX="center"
-        anchorY="middle"
-      >
-        {Math.random().toString(16).substr(2, 8)}
-      </Text>
-    </group>
-  )
-}
-
-const Connection = ({ start, end, color }) => {
-  const ref = useRef()
-
-  useFrame(() => {
-    ref.current.material.uniforms.dashOffset.value -= 0.01
-  })
-
-  return (
-    <Line
-      ref={ref}
-      points={[start, end]}
-      color={color}
-      lineWidth={2}
-      dashed={true}
-      dashScale={50}
-      dashSize={0.5}
-      dashOffset={0}
-    />
-  )
-}
-
-const CryptoNetwork = () => {
-  const { size } = useThree()
-  const scale = Math.min(size.width, size.height) / 25
-
-  const nodes = useMemo(() => {
-    return Array(50).fill().map(() => ({
-      position: [
-        (Math.random() - 0.5) * 20 * scale,
-        (Math.random() - 0.5) * 20 * scale,
-        (Math.random() - 0.5) * 20 * scale
-      ],
-      color: ['#ff9900', '#627eea', '#345d9d', '#26a17b'][Math.floor(Math.random() * 4)]
-    }))
-  }, [scale])
-
-  const connections = useMemo(() => {
-    return Array(75).fill().map(() => {
-      const startIndex = Math.floor(Math.random() * nodes.length)
-      let endIndex
-      do {
-        endIndex = Math.floor(Math.random() * nodes.length)
-      } while (endIndex === startIndex)
-
-      return {
-        start: nodes[startIndex].position,
-        end: nodes[endIndex].position,
-        color: new THREE.Color().setHSL(Math.random(), 1, 0.5).getHexString()
+    const response = await fetch(url, {
+      headers: {
+        'X-API-KEY': apiKey,
+        'Accept': 'application/json'
       }
-    })
-  }, [nodes])
+    });
 
-  return (
-    <>
-      {nodes.map((node, index) => (
-        <Node key={index} position={node.position} color={node.color} />
-      ))}
-      {connections.map((connection, index) => (
-        <Connection key={index} start={connection.start} end={connection.end} color={connection.color} />
-      ))}
-    </>
-  )
-}
+    console.log('Response status:', response.status);
+    console.log('Response headers:', JSON.stringify(response.headers, null, 2));
 
-const AnimatedCamera = () => {
-  const cameraRef = useRef()
-
-  useFrame(({ clock }) => {
-    if (cameraRef.current) {
-      cameraRef.current.position.x = Math.sin(clock.elapsedTime * 0.1) * 35
-      cameraRef.current.position.z = Math.cos(clock.elapsedTime * 0.1) * 35
-      cameraRef.current.lookAt(0, 0, 0)
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`OpenSea API responded with status ${response.status}: ${errorText}`);
     }
-  })
 
-  return <PerspectiveCamera ref={cameraRef} makeDefault position={[0, 0, 35]} fov={60} />
+    const data = await response.json();
+    console.log('Successfully fetched NFTs. Data structure:', JSON.stringify(Object.keys(data), null, 2));
+    
+    if (!data.orders) {
+      console.error('Unexpected data structure:', JSON.stringify(data, null, 2));
+      throw new Error('Unexpected data structure received from OpenSea API');
+    }
+
+    const nfts = data.orders.map((order: Order) => ({
+      id: order.order_hash,
+      name: order.maker_asset_bundle.assets[0].name || 'Unnamed NFT',
+      price: order.current_price,
+      image: order.maker_asset_bundle.assets[0].image_url || '/placeholder.svg?height=400&width=400',
+      description: order.maker_asset_bundle.assets[0].description || 'No description available',
+    }));
+
+    return NextResponse.json(nfts);
+  } catch (error: unknown) {
+    console.error('Error fetching NFTs:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'Failed to fetch NFTs', details: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: 'Failed to fetch NFTs', details: 'An unknown error occurred' }, { status: 500 });
+    }
+  }
 }
-
-export function CryptoBackground3D() {
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
-      <Canvas>
-        <color attach="background" args={['#000000']} />
-        <AnimatedCamera />
-        <ambientLight intensity={0.4} />
-        <pointLight position={[10, 10, 10]} intensity={2} />
-        <CryptoNetwork />
-        <fog attach="fog" args={['#000000', 15, 55]} />
-      </Canvas>
-    </div>
-  )
-}
-
-export default CryptoBackground3D;

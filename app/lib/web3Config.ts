@@ -1,8 +1,10 @@
-import { initializeConnector } from '@web3-react/core'
+import { Web3ReactHooks, initializeConnector } from '@web3-react/core'
 import { MetaMask } from '@web3-react/metamask'
 
-export const [metaMask, hooks] = initializeConnector<MetaMask>(
+const [metaMask, metaMaskHooks] = initializeConnector<MetaMask>(
   (actions) => new MetaMask({ actions })
 )
 
-export const connectors = [[metaMask, hooks]]
+export const connectors: [MetaMask, Web3ReactHooks][] = [
+  [metaMask, metaMaskHooks]
+]
