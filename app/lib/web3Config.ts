@@ -5,6 +5,8 @@ const [metaMask, metaMaskHooks] = initializeConnector<MetaMask>(
   (actions) => new MetaMask({ actions })
 )
 
+export { metaMask, metaMaskHooks }
+
 export const connectors: [MetaMask, Web3ReactHooks][] = [
   [metaMask, metaMaskHooks]
 ]
