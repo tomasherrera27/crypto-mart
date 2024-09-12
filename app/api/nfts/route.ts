@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { Order } from '@/app/types/Order';
 
 export async function GET() {
   const apiKey = process.env.OPENSEA_API_KEY;
@@ -39,7 +40,7 @@ export async function GET() {
       throw new Error('Unexpected data structure received from OpenSea API');
     }
 
-    const nfts = data.orders.map((order) => ({
+    const nfts = data.orders.map((order: Order) => ({
       id: order.order_hash,
       name: order.maker_asset_bundle.assets[0].name || 'Unnamed NFT',
       price: `${order.current_price} ETH`,
