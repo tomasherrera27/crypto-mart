@@ -5,10 +5,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Sphere, Line, Text, PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
 
-const Node = ({ position, color }) => {
+const Node = ({ position, color }: { position: [number, number, number]; color: string }) => {
   const ref = useRef()
 
-  useFrame((_state, delta) => {
+  useFrame((_, delta) => {
     ref.current.rotation.x += delta * 0.2
     ref.current.rotation.y += delta * 0.3
   })
@@ -34,7 +34,7 @@ const Node = ({ position, color }) => {
 const Connection = ({ start, end, color }) => {
   const ref = useRef()
 
-  useFrame((state) => {
+  useFrame(() => {
     ref.current.material.uniforms.dashOffset.value -= 0.01
   })
 
@@ -98,10 +98,10 @@ const CryptoNetwork = () => {
 const AnimatedCamera = () => {
   const cameraRef = useRef()
 
-  useFrame((state) => {
+  useFrame(({ clock }) => {
     if (cameraRef.current) {
-      cameraRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.1) * 35
-      cameraRef.current.position.z = Math.cos(state.clock.elapsedTime * 0.1) * 35
+      cameraRef.current.position.x = Math.sin(clock.elapsedTime * 0.1) * 35
+      cameraRef.current.position.z = Math.cos(clock.elapsedTime * 0.1) * 35
       cameraRef.current.lookAt(0, 0, 0)
     }
   })
@@ -111,7 +111,7 @@ const AnimatedCamera = () => {
 
 export function CryptoBackground3D() {
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1 }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1 }}>
       <Canvas>
         <color attach="background" args={['#000000']} />
         <AnimatedCamera />
