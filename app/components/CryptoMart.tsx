@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/app/comp
 import { Input } from "@/app/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog"
 import { Badge } from "@/app/components/ui/badge"
-import { Loader2Icon, ShoppingCartIcon, TagIcon, Zap, Search, X, CheckCircle } from 'lucide-react'
+import { Loader2Icon, ShoppingCartIcon, TagIcon, Zap, Search, X } from 'lucide-react'
 import { Web3ReactProvider } from '@web3-react/core'
 import { connectors } from '@/app/lib/web3Config'
 import { Header } from './Header'
