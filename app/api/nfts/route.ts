@@ -43,14 +43,18 @@ export async function GET() {
     const nfts = data.orders.map((order: Order) => ({
       id: order.order_hash,
       name: order.maker_asset_bundle.assets[0].name || 'Unnamed NFT',
-      price: `${order.current_price} ETH`,
+      price: order.current_price,
       image: order.maker_asset_bundle.assets[0].image_url || '/placeholder.svg?height=400&width=400',
       description: order.maker_asset_bundle.assets[0].description || 'No description available',
     }));
 
     return NextResponse.json(nfts);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching NFTs:', error);
-    return NextResponse.json({ error: 'Failed to fetch NFTs', details: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'Failed to fetch NFTs', details: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: 'Failed to fetch NFTs', details: 'An unknown error occurred' }, { status: 500 });
+    }
   }
 }
