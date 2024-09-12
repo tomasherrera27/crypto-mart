@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'CryptoMart is a marketplace for buying, selling, and trading unique digital assets on the blockchain.',
 }
 
-const CryptoBackground3D = dynamic(() => import('./components/CryptoBackground3D').then((mod) => mod.CryptoBackground3D), {
+const CryptoBackground3D = dynamic(() => import('./components/CryptoBackground3D'), {
   ssr: false,
   loading: () => <div className="fixed inset-0 bg-black">Loading 3D background...</div>
 })
