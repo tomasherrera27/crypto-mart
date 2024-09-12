@@ -39,7 +39,7 @@ export async function GET() {
       throw new Error('Unexpected data structure received from OpenSea API');
     }
 
-    const nfts = data.orders.map((order: any) => ({
+    const nfts = data.orders.map((order) => ({
       id: order.order_hash,
       name: order.maker_asset_bundle.assets[0].name || 'Unnamed NFT',
       price: `${order.current_price} ETH`,

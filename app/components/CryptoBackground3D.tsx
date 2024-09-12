@@ -8,7 +8,7 @@ import * as THREE from 'three'
 const Node = ({ position, color }) => {
   const ref = useRef()
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     ref.current.rotation.x += delta * 0.2
     ref.current.rotation.y += delta * 0.3
   })
