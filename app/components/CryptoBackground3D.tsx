@@ -4,7 +4,6 @@ import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Sphere, Line, Text, PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
-
 type NodeProps = {
   position: [number, number, number];
   color: string;
@@ -50,6 +49,7 @@ type ConnectionProps = {
 }
 
 const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
+  // @ts-ignore
   const ref = useRef<THREE.Line>(null)
 
   useFrame(() => {
@@ -60,8 +60,9 @@ const Connection: React.FC<ConnectionProps> = ({ start, end, color }) => {
   })
 
   return (
+    // @ts-ignore
     <Line
-      ref={ref as any}
+      ref={ref}
       points={[start, end]}
       color={color}
       lineWidth={2}
